@@ -30,6 +30,8 @@
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
+            <Label Content="Made by xSilent" 
+                   Margin="0 2 0 0" />
             <Button Click="SourceClicked">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconFontAwesome Kind="EditSolid" />
@@ -44,7 +46,8 @@
             Content="Email"/>
         <TextBox
             x:Name="Email" 
-            TextAlignment="Center" />
+            TextAlignment="Center"
+            Text="Fill this in" />
 
         <Label
             HorizontalAlignment="Center"
