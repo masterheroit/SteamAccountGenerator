@@ -1,0 +1,14 @@
+﻿<Window x:Class="SteamAccountGenerator.CaptchaViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Solve captcha" Height="200" Width="400" ResizeMode="CanMinimize">
+    <StackPanel>
+        <Image x:Name="Image" Source="https://store.steampowered.com/login/rendercaptcha?gid=1511420308489388721" />
+        <Label Content="Enter text:" />
+        <TextBox x:Name="Captcha" />
+        <Button Content="Submit" Click="CaptchaSolutionClicked" />
+    </StackPanel>
+</Window>

@@ -1,0 +1,80 @@
+﻿<controls:MetroWindow
+        x:Class="SteamAccountGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Empty Steam Account Generator"
+        Height="265"
+        Width="600"
+        ShowMaxRestoreButton="False"
+        ResizeMode="CanMinimize"
+        ShowIconOnTitleBar="True"
+        WindowStartupLocation="CenterScreen"
+        GlowBrush="{DynamicResource AccentColorBrush}">
+    <controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Cyan.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </controls:MetroWindow.Resources>
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button Click="SourceClicked">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconFontAwesome Kind="EditSolid" />
+                    <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="Source" />
+                </StackPanel>
+            </Button>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+    <StackPanel Width="580">
+        <Label
+            HorizontalAlignment="Center"
+            Content="Email"/>
+        <TextBox
+            x:Name="Email" 
+            TextAlignment="Center" />
+
+        <Label
+            HorizontalAlignment="Center"
+            Content="Username"
+            Margin="0 10 0 0" />
+        <TextBox
+            x:Name="Username" 
+            IsReadOnly="True"
+            TextAlignment="Center" />
+
+        <Label
+            HorizontalAlignment="Center"
+            Content="Password"
+            Margin="0 10 0 0"/>
+        <TextBox
+            x:Name="Password" 
+            IsReadOnly="True"
+            TextAlignment="Center" />
+
+        <iconPacks:PackIconFontAwesome
+            x:Name="Cog"
+            Kind="CogSolid"
+            Width="40"
+            Height="40"
+            HorizontalAlignment="Center"
+            Margin="0 10 0 0"
+            Visibility="Hidden" />
+        <Button 
+            Margin="0 -35 0 0"
+            Content="Generate"
+            Click="GenerateClicked"/>
+    </StackPanel>
+</controls:MetroWindow>
