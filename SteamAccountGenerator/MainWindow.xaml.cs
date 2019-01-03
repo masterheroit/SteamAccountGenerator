@@ -45,13 +45,14 @@ namespace SteamAccountGenerator
                 var Bytes = new byte[4];
                 Ms.Read(Bytes, 0, 3);
                 Version = Encoding.ASCII.GetString(Bytes);
+                Version = Version.Substring(0, Version.Length - 1);
             }
 
             var Jithub = new WebClient().DownloadString("https://raw.githubusercontent.com/SilentHammerHUN/SteamAccountGenerator/master/Ver.txt");
 
             if (Jithub != Version)
             {
-                MsgBox($"There is a new version available! The current version is: v{Version}, the latest one is v{Jithub}.");
+                MsgBox($"There is a new version available! The current version is: v{Version}, the latest one is v{Jithub}");
                 while (!DoneMsgBox) await Task.Delay(10);
                 Process.Start("https://github.com/silenthammerhun/steamaccountgenerator/releases");
             }
@@ -279,12 +280,19 @@ namespace SteamAccountGenerator
 
             end:
 
+            EmailVerified = false;
+            FoundEmail = false;
+            Jumped = false;
             Done = true;
             W.Browser.WebBrowser.GetCookieManager().DeleteCookies();
             W.Browser.Load("https://emailondeck.com");
 
         }
 
+        private void OnLoad(object Sender, RoutedEventArgs E)
+        {
+            CheckForUpdate();
+        }
     }
 }
 

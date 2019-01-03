@@ -14,7 +14,8 @@
         ResizeMode="CanMinimize"
         ShowIconOnTitleBar="True"
         WindowStartupLocation="CenterScreen"
-        GlowBrush="{DynamicResource AccentColorBrush}">
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        Loaded="OnLoad">
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
