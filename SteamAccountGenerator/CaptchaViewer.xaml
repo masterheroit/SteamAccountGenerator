@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Solve captcha" Height="200" Width="400" ResizeMode="CanMinimize">
+        Title="Solve captcha" Height="170" Width="300" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Topmost="True">
     <StackPanel>
-        <Image x:Name="Image" Source="https://store.steampowered.com/login/rendercaptcha?gid=1511420308489388721" />
+        <Image x:Name="Image" />
         <Label Content="Enter text:" />
         <TextBox x:Name="Captcha" />
         <Button Content="Submit" Click="CaptchaSolutionClicked" />

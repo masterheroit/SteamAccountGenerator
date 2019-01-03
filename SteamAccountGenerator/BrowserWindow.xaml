@@ -8,6 +8,6 @@
         ResizeMode="CanMinimize" ShowInTaskbar="False"
         xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf">
     <Grid>
-        <cefSharp:ChromiumWebBrowser Grid.Row="0" Address="https://www.emailondeck.com/"/>
+        <cefSharp:ChromiumWebBrowser x:Name="Browser"  Grid.Row="0" Address="https://www.emailondeck.com/"/>
     </Grid>
 </Window>

@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CefSharp;
 using CefSharp.Wpf;
 
 namespace SteamAccountGenerator
@@ -28,10 +29,7 @@ namespace SteamAccountGenerator
             InitializeComponent();
         }
 
-        public ChromiumWebBrowser Browser;
-        private static BrowserWindow This;
-
-        public static BrowserWindow Instance() => This;
+        public BrowserWindow This;
 
         public bool ShouldClose = false;
         protected override void OnClosing(CancelEventArgs E)

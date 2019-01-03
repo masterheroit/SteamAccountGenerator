@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("SteamAccountGenerator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("xSilent")]
 [assembly: AssemblyProduct("SteamAccountGenerator")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright © xSilent 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.IO.Packaging;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using MahApps.Metro.Controls;
+using CefSharp;
 using MahApps.Metro.SimpleChildWindow;
 using Newtonsoft.Json;
 
@@ -18,7 +24,7 @@ namespace SteamAccountGenerator
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow
     {
         
         private static readonly BrowserWindow W = new BrowserWindow();
@@ -27,6 +33,29 @@ namespace SteamAccountGenerator
         {
             InitializeComponent();
             W.Show();
+        }
+
+        private async void CheckForUpdate()
+        {
+
+            string Version;
+            using (var Ms = new MemoryStream(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location)))
+            {
+                Ms.Seek(-3, SeekOrigin.End);
+                var Bytes = new byte[4];
+                Ms.Read(Bytes, 0, 3);
+                Version = Encoding.ASCII.GetString(Bytes);
+            }
+
+            var Jithub = new WebClient().DownloadString("https://raw.githubusercontent.com/SilentHammerHUN/SteamAccountGenerator/master/Ver.txt");
+
+            if (Jithub != Version)
+            {
+                MsgBox($"There is a new version available! The current version is: v{Version}, the latest one is v{Jithub}.");
+                while (!DoneMsgBox) await Task.Delay(10);
+                Process.Start("https://github.com/silenthammerhun/steamaccountgenerator/releases");
+            }
+
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -46,8 +75,7 @@ namespace SteamAccountGenerator
         private static string GenUsername() => new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 16).Select(S => S[R.Next(S.Length)]).ToArray());
         private static string GenPassword() => new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!%@#<>&,;?.:-_$+=", 32).Select(S => S[R.Next(S.Length)]).ToArray());
 
-        private bool DoneMsgBox = false;
-
+        private bool DoneMsgBox;
         private async void MsgBox(string Text)
         {
             DoneMsgBox = false;
@@ -80,6 +108,8 @@ namespace SteamAccountGenerator
 
             while (!Done)
                 await Task.Delay(10);
+
+            MsgBox("Done!");
 
             Username.Text = Account[0];
             Password.Text = Account[1];
@@ -124,6 +154,65 @@ namespace SteamAccountGenerator
 
         }
 
+        private bool EmailVerified;
+        private bool FoundEmail;
+        private bool Jumped;
+        private async void VerifyEmail()
+        {
+
+            W.This.Browser.ConsoleMessage += LogInnerHtml;
+            while (!FoundEmail)
+            {
+                W.Browser.ExecuteScriptAsync("console.log(document.getElementById('nomail').innerHTML)");
+                await Task.Delay(500);
+            }
+            W.This.Browser.ConsoleMessage -= LogInnerHtml;
+
+            W.This.Browser.ConsoleMessage += NavigateWhenReady;
+            while (!Jumped)
+            {
+                W.Browser.ExecuteScriptAsync("console.log(document.getElementsByClassName('msglink')[0].attributes.name.value)");
+                await Task.Delay(10);
+            }
+            W.This.Browser.ConsoleMessage -= NavigateWhenReady;
+
+            W.This.Browser.ConsoleMessage += ClickEmail;
+            while (!EmailVerified)
+            {
+                W.Browser.ExecuteScriptAsync("console.log(document.getElementsByTagName('body')[0].innerHTML)");
+                await Task.Delay(10);
+            }
+            W.This.Browser.ConsoleMessage -= ClickEmail;
+
+        }
+
+        private void LogInnerHtml(object Sender, ConsoleMessageEventArgs Args)
+        {
+            if (Args.Message == "Automatically checking for new emails...")
+            {
+                FoundEmail = true;
+            }
+        }
+
+        private void NavigateWhenReady(object Sender, ConsoleMessageEventArgs Args)
+        {
+            W.Browser.Load("https://www.emailondeck.com/email_iframe.php?msg_id=" + Args.Message);
+            Jumped = true;
+        }
+
+        private void ClickEmail(object Sender, ConsoleMessageEventArgs E)
+        {
+
+            var R = new Regex("https:\\/\\/store\\.steampowered\\.com\\/account\\/newaccountverification\\?stoken=.{96}&amp;creationid=\\d{19}");
+            var Match = R.Match(E.Message);
+            if (!Match.Success)
+                return;
+
+            W.This.Browser.Load(Match.Value.Replace("&amp;", "&"));
+            EmailVerified = true;
+
+        }
+
         private async void GenerateAccount()
         {
 
@@ -139,7 +228,7 @@ namespace SteamAccountGenerator
                 goto end;
 
             var ToReturn = new [] { GenUsername(), GenPassword() };
-
+            
             GetCaptchaId();
             while (Solution == string.Empty) await Task.Delay(10);
 
@@ -153,9 +242,6 @@ namespace SteamAccountGenerator
 
             await Client.PostAsync("https://store.steampowered.com/join/verifycaptcha/", Values);
             
-            GetCaptchaId();
-            while (Solution == string.Empty) await Task.Delay(10);
-
             Values = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 { "captchagid", CaptchaId },
@@ -163,14 +249,20 @@ namespace SteamAccountGenerator
                 { "email", EmailAddress }
             });
 
+            await Task.Delay(200);
             var Response = await Client.PostAsync("https://store.steampowered.com/join/ajaxverifyemail", Values).Result.Content.ReadAsStringAsync();
 
             var SessionId = JsonConvert.DeserializeObject<AjaxResponse>(Response).CreationId;
 
-            MsgBox("Verify the email, and after you have done that, click on the 'X'");
+            VerifyEmail();
+            while (!EmailVerified) await Task.Delay(10);
+            await Task.Delay(100);
+
+            /*MsgBox("Verify the email, and after you have done that, click on the 'X'");
             while (!DoneMsgBox) await Task.Delay(10);
             //Just to be safe...
-            await Task.Delay(3000);
+            await Task.Delay(1000);
+            */
 
             Values = new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -185,9 +277,14 @@ namespace SteamAccountGenerator
 
             Account = ToReturn;
 
-            end: Done = true;
+            end:
+
+            Done = true;
+            W.Browser.WebBrowser.GetCookieManager().DeleteCookies();
+            W.Browser.Load("https://emailondeck.com");
 
         }
 
     }
 }
+
